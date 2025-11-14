@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "788778643810",
+    "firebase_url": "https://karoninha-609a5-default-rtdb.firebaseio.com",
+    "project_id": "karoninha-609a5",
+    "storage_bucket": "karoninha-609a5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788778643810:android:27496b2c8676be9055bc3b",
+        "android_client_info": {
+          "package_name": "com.example.karoninha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw5Ghw53QA06QiOEmN3K5BTisofG970fw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
