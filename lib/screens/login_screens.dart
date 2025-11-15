@@ -1,8 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:karoninha/screens/home_screen.dart';
 import 'package:karoninha/screens/signup_screen.dart';
+import 'package:karoninha/user_info.dart';
 import 'package:karoninha/widgets/custom_text_field.dart';
 import 'package:karoninha/widgets/form_validator.dart';
 import 'package:karoninha/widgets/snackbar.dart';
+
+import '../widgets/loading_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,12 +18,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreensState extends State<LoginScreen> {
-  TextEditingController editingController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   loginFormValidation() {
 
-    final email = editingController.text.trim();
+    final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     if(email.isEmpty || password.isEmpty){
@@ -27,7 +33,46 @@ class _LoginScreensState extends State<LoginScreen> {
     } else if (!FormValidator.isValidPassword(password)){
       displaySnackBar("Password must be at least 6 characters", context);
     } else {
+      loginUser();
+    }
 
+  }
+
+  loginUser() async {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => LoadingDialog()
+    );
+
+    try {
+      final User? fbUser = (await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      ).catchError((onErrorOccurred){
+        displaySnackBar(onErrorOccurred.toString(), context);
+        Navigator.pop(context);
+        return onErrorOccurred;
+      })).user;
+
+      DatabaseReference usersReference = FirebaseDatabase.instance.ref().child("allUsers").child(fbUser!.uid);
+      await usersReference.once().then((onValue){
+        if(onValue.snapshot.value != null){
+          nameOfUser = (onValue.snapshot.value as Map)["name"];
+          phoneOfUser = (onValue.snapshot.value as Map)["phone"];
+          emailOfUser = (onValue.snapshot.value as Map)["email"];
+
+          displaySnackBar("You are Logged-in Successfully. Hurrah, you can make Trip Requests now.", context);
+
+          Navigator.push(context, MaterialPageRoute(builder: (c)=> HomeScreen()));
+        } else {
+          displaySnackBar("your record not found.", context);
+        }
+      });
+    } on FirebaseAuthException catch (exp){
+      displaySnackBar(exp.toString(), context);
+      FirebaseAuth.instance.signOut();
+      Navigator.pop(context);
     }
 
   }
@@ -60,7 +105,7 @@ class _LoginScreensState extends State<LoginScreen> {
               children: [
 
                 CustomTextField(
-                  controller: editingController,
+                  controller: emailController,
                   label: "Email",
                   keyboardType: TextInputType.emailAddress,
                 ),

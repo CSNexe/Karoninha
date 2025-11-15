@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:karoninha/screens/login_screens.dart';
 import 'package:karoninha/widgets/form_validator.dart';
 
 import '../widgets/custom_text_field.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/snackbar.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -13,30 +16,71 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  TextEditingController editingController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
   signupFormValidation() {
-    final email = editingController.text.trim();
+
+    final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final name = nameController.text.trim();
     final phone = phoneController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || name.isEmpty || phone.isEmpty){
+    if (name.isEmpty || phone.isEmpty || email.isEmpty || password.isEmpty) {
       displaySnackBar("All fields are required.", context);
     } else if(!FormValidator.isValidName(name)){
       displaySnackBar("Name must be at least 4 characters.", context);
-    } else if(!FormValidator.isValidPhone(phone)) {
-      displaySnackBar("Phone number must be at least 7 digits.", context);
-    } else if(!FormValidator.isValidEmail(email)) {
+    } else if (!FormValidator.isValidPhone(phone)) {
+      displaySnackBar("Phone number must be at least 6 digits.", context);
+    } else if (!FormValidator.isValidEmail(email)) {
       displaySnackBar("Invalid email format.", context);
-    } else if(!FormValidator.isValidPassword(password)) {
-      displaySnackBar("Password must be at least 5 characters.", context);
+    } else if (!FormValidator.isValidPassword(password)) {
+      displaySnackBar("Password must be at least 6 characters.", context);
     } else {
-
+      createUserAccount();
     }
+  }
+
+  createUserAccount() async {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => LoadingDialog()
+    );
+
+    try{
+      final User? fbUser = (await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+      ).catchError((onErrorOccurred){
+          displaySnackBar(onErrorOccurred.toString(), context);
+          Navigator.pop(context);
+          return onErrorOccurred;
+      })).user;
+
+      Map dateOfUser = {
+        "email": emailController.text.trim(),
+        "name": nameController.text.trim(),
+        "phone": phoneController.text.trim(),
+        "id": fbUser!.uid,
+      };
+
+      FirebaseDatabase.instance.ref("allUsers").child(fbUser.uid).set(dateOfUser);
+
+      displaySnackBar("Account has been created.", context);
+
+      FirebaseAuth.instance.signOut();
+
+      Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+
+    } on FirebaseAuthException catch(exp){
+      displaySnackBar(exp.toString(), context);
+      FirebaseAuth.instance.signOut();
+      Navigator.pop(context);
+    }
+
   }
 
   @override
@@ -83,7 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(height: 24),
 
                 CustomTextField(
-                  controller: editingController,
+                  controller: emailController,
                   label: "Email",
                   keyboardType: TextInputType.emailAddress,
                 ),
