@@ -120,7 +120,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 CustomTextField(
                     controller: phoneController ,
-                    label: "Phone Number",
+                    label: "User Phone",
                     keyboardType: TextInputType.phone
                 ),
 
@@ -128,7 +128,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 CustomTextField(
                   controller: emailController,
-                  label: "Email",
+                  label: "User Email",
                   keyboardType: TextInputType.emailAddress,
                 ),
 
@@ -136,7 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 CustomTextField(
                   controller: passwordController,
-                  label: "Password",
+                  label: "User Password",
                   isPassword: true,
                 ),
 

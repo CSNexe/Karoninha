@@ -1,4 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:karoninha/user_info.dart';
+
+import '../screens/login_screens.dart';
+
 
 
 class UserDrawer extends StatefulWidget {
@@ -9,85 +14,87 @@ class UserDrawer extends StatefulWidget {
 }
 
 class _UserDrawerState extends State<UserDrawer> {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        width: 256,
-        child: Drawer(
-          backgroundColor: Colors.black87,
-          child: ListView(
-            children: [
+@override
+Widget build(BuildContext context) {
+  return SizedBox(
+      width: 258,
+      child: Drawer(
+        backgroundColor: Colors.black87,
+        child: ListView(
+          children: [
 
-              //header
-              SizedBox(
-                height: 160,
-                child: DrawerHeader(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "",
-                        width: 60,
-                        height: 60,
-                      ),
+            //head of drawer
+            SizedBox(
+              height: 160,
+              child: DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      "assets/images/user_avatar.png",
+                      width: 60,
+                      height: 60,
+                    ),
 
-                      const SizedBox(width: 16,),
+                    const SizedBox(width: 16,),
 
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          nameOfUser,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
+                        ),
 
-                          const SizedBox(height: 4,),
+                        const SizedBox(height: 4,),
 
-                          const Text(
-                            "profile",
-                            style: TextStyle(
-                              color: Colors.white70,
-                            ),
+                        const Text(
+                          "profile",
+                          style: TextStyle(
+                            color: Colors.white70,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              //body
-              GestureDetector(
-                onTap: ()
-                {
-                  
-                },
-                child: const ListTile(
-                  leading: Icon(Icons.history, color: Colors.white,),
-                  title: Text("History", style: TextStyle(color: Colors.white),),
-                ),
+            //body of drawer
+            GestureDetector(
+              onTap: ()
+              {
+
+              },
+              child: const ListTile(
+                leading: Icon(Icons.history, color: Colors.white,),
+                title: Text("History", style: TextStyle(color: Colors.white),),
               ),
+            ),
 
-              GestureDetector(
-                onTap: ()
-                {
-                  
-                },
-                child: const ListTile(
-                  leading:  Icon(Icons.logout, color: Colors.white,),
-                  title: Text("Logout", style: TextStyle(color: Colors.white),),
-                ),
+            GestureDetector(
+              onTap: ()
+              {
+                FirebaseAuth.instance.signOut();
+
+                Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+              },
+              child: const ListTile(
+                leading:  Icon(Icons.logout, color: Colors.white,),
+                title: Text("Logout", style: TextStyle(color: Colors.white),),
               ),
+            ),
 
-            ],
-          ),
-        )
-      );
-  }
+          ],
+        ),
+      )
+  );
+}
 }

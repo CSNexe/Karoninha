@@ -39,6 +39,10 @@ dependencies:
   firebase_database:
   google_maps_flutter:
   geolocator:
+  permission_handler:
+  http:
+  provider:
+  flutter_polyline_points:
 
 
 dev_dependencies:
